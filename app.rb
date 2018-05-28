@@ -8,6 +8,8 @@ def client
   }
 end
 
+$uids = {}
+
 post '/callback' do
   body = request.body.read
 
@@ -22,9 +24,10 @@ post '/callback' do
     when Line::Bot::Event::Message
       case event.type
       when Line::Bot::Event::MessageType::Text
+        $uids[event['source']['userId']] = true
         message = {
           type: 'text',
-          text: event['source']['userId'] # event.message['text']
+          text: event.message['text']
         }
         client.reply_message(event['replyToken'], message)
       when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
@@ -34,6 +37,11 @@ post '/callback' do
       end
     end
   }
+
+  $uids.each do |uid|
+    client.push_message(uid, "HI")
+  end
+  sleep(20)
 
   "OK"
 end
