@@ -53,17 +53,18 @@ post '/callback' do
 
   signature = request.env['HTTP_X_LINE_SIGNATURE']
   unless client.validate_signature(body, signature)
-    t = get_tour(100)
+    #t = get_tour(100)
     if t != 'No tournament found'
+=begin
       uids = gh.gists(ENV["LNID_GIST_ID"])['files']['lnid.txt']['content'].split(/\s/)
       uids.each do |uid|
         message = {
           type: 'text',
           text: t
         }
-
         client.push_message(uid, message)
       end
+=end
     end
   else
     events = client.parse_events_from(body)
@@ -77,9 +78,12 @@ post '/callback' do
             text: get_tour(50)
           }
           uid = event['source']['userId']
+          p uid
           uids = gh.gists(ENV["LNID_GIST_ID"])['files']['lnid.txt']['content'].split(/\s/)
+          p uids
           uids << uid
           uids.uniq!
+          p uids
           gh.gists(ENV["LNID_GIST_ID"]).patch({files: {'lnid.txt': {content: uids.join(?\n)}}})
           client.reply_message(event['replyToken'], message)
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
