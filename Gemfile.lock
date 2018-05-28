@@ -2,7 +2,10 @@ GEM
   remote: http://rubygems.org/
   specs:
     line-bot-api (1.2.2)
+    mini_portile2 (2.3.0)
     mustermann (1.0.2)
+    nokogiri (1.8.2)
+      mini_portile2 (~> 2.3.0)
     rack (2.0.5)
     rack-protection (2.0.1)
       rack
@@ -18,6 +21,7 @@ PLATFORMS
 
 DEPENDENCIES
   line-bot-api
+  nokogiri
   sinatra
 
 RUBY VERSION
