@@ -39,6 +39,7 @@ post '/callback' do
   }
 
   $uids.each do |uid|
+    p uid
     client.push_message(uid, "HI")
   end
   sleep(20)
