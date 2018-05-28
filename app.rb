@@ -4,6 +4,8 @@ require 'line/bot'
 require 'open-uri'
 require 'nokogiri'
 
+require 'ghee'
+
 def client
   @client ||= Line::Bot::Client.new { |config|
     config.channel_secret = ENV["LINE_CHANNEL_SECRET"]
@@ -12,7 +14,7 @@ def client
 end
 
 def get_tour(lim)
-  $tused ||= {}
+  tused = gh.gists(ENV["HASH_GIST_ID"])['files']['hash.txt']['content'].split(/\s/)
 
   doc = Nokogiri::HTML(open("https://statsroyale.com/tournaments"))
 
@@ -33,17 +35,18 @@ def get_tour(lim)
   s = frac.zip(name.zip(seri)).map(&:flatten).map do |t|
     f, n, x = t
     a, b = f.split(?/).map &:to_i
-    if a < b && b >= lim && !($tused.include?(x))
-      $tused[x] = true if b > 50
+    if a < b && b >= lim && !(tused.include?(x))
+      tused << x if b > 50
       f + ?: + n + ?: + ?\n + "clashroyale://joinTournament?id=#{x[1...x.size]}" + ?\n
     end
   end.compact.join(?\n)
 
+  tused.shift while tused.size > 20
+  gh.gists(ENV['HASH_GIST_ID']).patch({files: {'hash.txt': {content: tused.join(?\n)}}})
+
   return 'No tournament found' if s.empty?
   s
 end
-
-$uids ||= {}
 
 post '/callback' do
   body = request.body.read
@@ -52,7 +55,8 @@ post '/callback' do
   unless client.validate_signature(body, signature)
     t = get_tour(100)
     if t != 'No tournament found'
-      $uids.keys.each do |uid|
+      uids = gh.gists(ENV["LNID_GIST_ID"])['files']['lnid.txt']['content'].split(/\s/)
+      uids.each do |uid|
         message = {
           type: 'text',
           text: t
@@ -72,7 +76,11 @@ post '/callback' do
             type: 'text',
             text: get_tour(50)
           }
-          $uids[event['source']['userId']] = true
+          uid = event['source']['userId']
+          uids = gh.gists(ENV["LNID_GIST_ID"])['files']['lnid.txt']['content'].split(/\s/)
+          uids << uid
+          uids.uniq!
+          gh.gists(ENV["LNID_GIST_ID"]).patch({files: {'lnid.txt': {content: uids.join(?\n)}}})
           client.reply_message(event['replyToken'], message)
         when Line::Bot::Event::MessageType::Image, Line::Bot::Event::MessageType::Video
           response = client.get_message_content(event.message['id'])
