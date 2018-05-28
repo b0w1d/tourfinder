@@ -46,6 +46,7 @@ def get_tour(lim)
   end.compact.join(?\n)
 
   tused.shift while tused.size > 20
+  p tused
   gh.gists(ENV['HASH_GIST_ID']).patch({files: {'hash.txt': {content: tused.join(?\n)}}})
 
   return 'No tournament found' if s.empty?
