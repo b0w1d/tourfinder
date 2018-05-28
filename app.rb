@@ -57,8 +57,8 @@ post '/callback' do
 
   signature = request.env['HTTP_X_LINE_SIGNATURE']
   unless client.validate_signature(body, signature)
-=begin
     t = get_tour(100)
+    p t
     if t != 'No tournament found'
       uids = gh.gists(ENV["LNID_GIST_ID"])['files']['lnid.txt']['content'].split(/\s/)
       uids.each do |uid|
@@ -69,7 +69,6 @@ post '/callback' do
         client.push_message(uid, message)
       end
     end
-=end
   else
     events = client.parse_events_from(body)
     events.each { |event|
