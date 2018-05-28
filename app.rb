@@ -38,7 +38,7 @@ post '/callback' do
     end
   }
 
-  $uids.each do |uid|
+  $uids.keys.each do |uid|
     p uid
     client.push_message(uid, "HI")
   end
