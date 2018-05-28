@@ -40,7 +40,7 @@ post '/callback' do
 
   $uids.keys.each do |uid|
     p uid
-    client.push_message(uid, "HI")
+    p client.push_message(uid, "HI")
   end
   sleep(20)
 
