@@ -20,6 +20,7 @@ end
 def get_tour(lim)
   tused = gh.gists(ENV["HASH_GIST_ID"])['files']['hash.txt']['content'].split(/\s/) rescue []
 
+  p tused
   doc = Nokogiri::HTML(open("https://statsroyale.com/tournaments"))
 
   frac = doc.xpath('//div[starts-with(@class, "challenges__row")]').map do |el|
@@ -46,7 +47,6 @@ def get_tour(lim)
   end.compact.join(?\n)
 
   tused.shift while tused.size > 20
-  p tused
   gh.gists(ENV['HASH_GIST_ID']).patch({files: {'hash.txt': {content: tused.join(?\n)}}})
 
   return 'No tournament found' if s.empty?
