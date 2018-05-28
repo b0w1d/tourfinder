@@ -20,7 +20,6 @@ end
 def get_tour(lim)
   tused = gh.gists(ENV["HASH_GIST_ID"])['files']['hash.txt']['content'].split(/\s/) rescue []
 
-  p tused
   doc = Nokogiri::HTML(open("https://statsroyale.com/tournaments"))
 
   frac = doc.xpath('//div[starts-with(@class, "challenges__row")]').map do |el|
@@ -58,6 +57,7 @@ post '/callback' do
 
   signature = request.env['HTTP_X_LINE_SIGNATURE']
   unless client.validate_signature(body, signature)
+=begin
     t = get_tour(100)
     if t != 'No tournament found'
       uids = gh.gists(ENV["LNID_GIST_ID"])['files']['lnid.txt']['content'].split(/\s/)
@@ -69,6 +69,7 @@ post '/callback' do
         client.push_message(uid, message)
       end
     end
+=end
   else
     events = client.parse_events_from(body)
     events.each { |event|
