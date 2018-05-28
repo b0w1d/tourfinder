@@ -39,8 +39,11 @@ post '/callback' do
   }
 
   $uids.keys.each do |uid|
-    p uid
-    p client.push_message(uid, "HI")
+    message = {
+      type: 'text',
+      text: uid
+    }
+    p client.push_message(uid, message)
   end
   sleep(20)
 
