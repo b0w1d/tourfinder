@@ -33,7 +33,10 @@ def get_tour(lim)
   s = frac.zip(name.zip(seri)).map(&:flatten).map do |t|
     f, n, x = t
     a, b = f.split(?/).map &:to_i
-    a == b || b < lim || (lim > 50 && $tused.include?(x)) ? nil : ($tused[x] = true; t.join(?:))
+    if a < b && b >= lim && !($tused.include?(x))
+      $tused[x] = true if b > 50
+      f + ?: + n + ?: + ?\n + "clashroyale://joinTournament?id=#{x[1...x.size]}" + ?\n
+    end
   end.compact.join(?\n)
 
   return 'No tournament found' if s.empty?
@@ -47,9 +50,8 @@ post '/callback' do
 
   signature = request.env['HTTP_X_LINE_SIGNATURE']
   unless client.validate_signature(body, signature)
-    # error 400 do 'Bad Request' end
     t = get_tour(100)
-    if t != 'No tournament found' || true
+    if t != 'No tournament found'
       $uids.keys.each do |uid|
         message = {
           type: 'text',
