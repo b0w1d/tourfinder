@@ -49,11 +49,11 @@ post '/callback' do
   unless client.validate_signature(body, signature)
     # error 400 do 'Bad Request' end
     t = get_tour(100)
-    if t != 'No tournament found' 
+    if t != 'No tournament found' || true
       $uids.keys.each do |uid|
         message = {
           type: 'text',
-          text: get_tour(100)
+          text: t
         }
 
         client.push_message(uid, message)
