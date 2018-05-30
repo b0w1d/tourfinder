@@ -18,7 +18,6 @@ def gh
 end
 
 def get_tour(lim)
-  p gh
   tused = gh.gists(ENV["HASH_GIST_ID"])['files']['hash.txt']['content'].split(/\s/) rescue []
 
   doc = Nokogiri::HTML(open("https://statsroyale.com/tournaments"))
