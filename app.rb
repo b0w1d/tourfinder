@@ -14,7 +14,10 @@ def client
 end
 
 def gh
-  Ghee.basic_auth(ENV['GIT_ACT'], ENV['GIT_PWD'])
+  @cnt ||= 0
+  @cnt += 1
+  @gh = nil if @cnt % 1000 == 0
+  @gh ||= Ghee.basic_auth(ENV['GIT_ACT'], ENV['GIT_PWD'])
 end
 
 def get_tour(lim)
