@@ -14,7 +14,7 @@ def client
 end
 
 def gh
-  @gh ||= Ghee.basic_auth(ENV['GIT_ACT'], ENV['GIT_PWD'])
+  Ghee.basic_auth(ENV['GIT_ACT'], ENV['GIT_PWD'])
 end
 
 def get_tour(lim)
